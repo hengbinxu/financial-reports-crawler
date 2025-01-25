@@ -19,5 +19,5 @@ class GoogleOauthScopesRepository:
         scopes = GoogleOauthScopes(hashed_scopes=hashed_scopes)
         session.add(scopes)
         session.commit()
-        session.flush(scopes)
+        session.refresh(scopes)
         return scopes
