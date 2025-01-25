@@ -1,4 +1,5 @@
 import math
+import time
 from datetime import datetime, timedelta
 from typing import Any, Dict, Generator
 
@@ -76,10 +77,10 @@ class DenmarkFinancialReportProducer(BaseClient):
         return DenmarkReportApiResponse(**res.json())
 
     def get_date_range_reports(
-        self, start_date: datetime, end_date: datetime
+        self, *, start_date: datetime, end_date: datetime, time_interval: float = 1.0
     ) -> Generator[DenmarkReportApiResponse, None, None]:
         response = self._request_report(start_date=start_date, end_date=end_date)
-        self.log.debug(f"Total hits: {response.hits.total}")
+        self.log.debug(f"[Produce] Total hits: {response.hits.total}")
         yield response
         required_request_times = math.ceil(response.hits.total / self.PAGE_SIZE)
         if required_request_times <= 0:
@@ -90,11 +91,16 @@ class DenmarkFinancialReportProducer(BaseClient):
                 start_date=start_date, end_date=end_date, page=page
             )
             yield response
+            time.sleep(time_interval)
 
-    def get_today_reports(self) -> Generator[DenmarkReportApiResponse, None, None]:
+    def get_today_reports(
+        self, *, time_interval: float = 1.0
+    ) -> Generator[DenmarkReportApiResponse, None, None]:
         date_format = "%Y-%m-%d"
         today = datetime.strptime(
             HelperFunc.get_now().strftime(date_format), date_format
         )
         tomorrow = today + timedelta(days=1)
-        yield from self.get_date_range_reports(today, tomorrow)
+        yield from self.get_date_range_reports(
+            start_date=today, end_date=tomorrow, time_interval=time_interval
+        )

@@ -6,6 +6,11 @@ class Envs(str, Enum):
     DEV = "DEV"
 
 
+class TaskStatus(str, Enum):
+    IN_PROGRESS = "IN_PROGRESS"
+    FINISHED = "FINISHED"
+
+
 class ProduceMode(str, Enum):
     TODAY = "today"
     DATE_RANGE = "date_range"

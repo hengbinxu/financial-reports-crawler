@@ -33,7 +33,7 @@ class DenmarkFinancialReportConsumer:
             try:
                 self._write_to_db(report_info)
             except IntegrityError:
-                self.log.debug(f"Record already exists: {report_info}")
+                self.log.debug(f"[Consumer] Record already exists: {report_info}")
                 continue
 
             output_path = self._get_output_file_path(report_info)
@@ -46,4 +46,6 @@ class DenmarkFinancialReportConsumer:
             self.denmark_report_record_repo.create(
                 session=session, report_record=report_record
             )
-        self.log.debug(f"Successfully added record to database: {report_record}")
+        self.log.debug(
+            f"[Consumer] Successfully added record to database: {report_record}"
+        )

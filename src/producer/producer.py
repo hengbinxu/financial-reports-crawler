@@ -2,8 +2,9 @@ from queue import Queue
 from typing import Any
 
 from src.models.denmark_api import DenmarkReportApiResponse
+from src.models.queue_data import QueueData
 from src.producer.denmark import DenmarkFinancialReportProducer
-from src.utils.constants import ProduceMode
+from src.utils.constants import ProduceMode, TaskStatus
 from src.utils.logger import SystemLogger
 
 
@@ -22,12 +23,17 @@ class Producer:
         self.denmark_producer = DenmarkFinancialReportProducer()
         self.kwargs = kwargs
 
-    def produce(self) -> None:
+    def produce(self, *, time_interval: float = 1.0) -> None:
         match self.produce_mode:
             case ProduceMode.TODAY:
-                for response in self.denmark_producer.get_today_reports():
+                for response in self.denmark_producer.get_today_reports(
+                    time_interval=time_interval
+                ):
                     self.log.debug("[Producer] Put the message to the queue")
-                    self.queue.put(response)
+                    self.queue.put(
+                        QueueData(data=response, task_status=TaskStatus.IN_PROGRESS)
+                    )
+                self.queue.put(QueueData(data=None, task_status=TaskStatus.FINISHED))
 
             case ProduceMode.DATE_RANGE:
                 start_date, end_date = (
@@ -35,10 +41,15 @@ class Producer:
                     self.kwargs["end_date"],
                 )
                 for response in self.denmark_producer.get_date_range_reports(
-                    start_date=start_date, end_date=end_date
+                    start_date=start_date,
+                    end_date=end_date,
+                    time_interval=time_interval,
                 ):
                     self.log.debug("[Producer] Put the message to the queue")
-                    self.queue.put(response)
+                    self.queue.put(
+                        QueueData(data=response, task_status=TaskStatus.IN_PROGRESS)
+                    )
+                self.queue.put(QueueData(data=None, task_status=TaskStatus.FINISHED))
 
             case _:
                 raise ValueError("Invalid produce mode")

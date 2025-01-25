@@ -1,4 +1,7 @@
+import random
+from concurrent.futures import Future, ThreadPoolExecutor
 from datetime import datetime
+from typing import Any
 
 import click
 from click.core import Context, Option
@@ -56,7 +59,7 @@ def main(
     end_date: datetime | None,
 ) -> None:
     sql_connector.init_db()
-    queue_manager = QueueManager[DenmarkReportApiResponse]()
+    queue_manager = QueueManager[DenmarkReportApiResponse](max_size=20)
     queue = queue_manager.get_queue()
     producer = Producer(
         queue,
@@ -66,8 +69,23 @@ def main(
     )
     consumer = Consumer(queue)
 
-    producer.produce()
-    consumer.consume()
+    tasks_args: list[dict[str, Any]] = [
+        {
+            "fn": producer.produce,
+            "kwargs": {"time_interval": random.uniform(0.5, 1.5)},
+        },
+        {"fn": consumer.consume, "kwargs": {}},
+    ]
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        tasks: list[Future[Any]] = []
+        for task_args in tasks_args:
+            if task_args["kwargs"]:
+                tasks.append(executor.submit(task_args["fn"], **task_args["kwargs"]))
+            else:
+                tasks.append(executor.submit(task_args["fn"]))
+
+    for task in tasks:
+        task.result()
 
 
 if __name__ == "__main__":
