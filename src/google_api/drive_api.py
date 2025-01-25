@@ -64,10 +64,10 @@ class GoogleDriveApi(GoogleOauth):
         parent_drive_ids: List[str],
     ) -> UploadFileResponse:
         file_meta = {
-            "name": file_path.name,  # type: ignore
+            "name": file_path.name,
             "parents": parent_drive_ids,
         }
-        media_body = MediaFileUpload(filename=file_path.name)  # type: ignore
+        media_body = MediaFileUpload(filename=file_path)
         result = (
             self.drive_service.files()
             .create(body=file_meta, media_body=media_body)

@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DENMARK_REPORT_URL: str
     DENMARK_CVR_API_ULR: str
     DB_URL: str
-    PARENT_DRIVE_ID: str
+    DENMARK_PARENT_DRIVE_ID: str
 
     model_config = SettingsConfigDict(env_file=ENV_PATH)
 
