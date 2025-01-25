@@ -9,5 +9,5 @@ class DenmarkReportRecordRepository:
     ) -> DenmarkReportRecord:
         session.add(report_record)
         session.commit()
-        session.flush(report_record)
+        session.refresh(report_record)
         return report_record

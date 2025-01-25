@@ -13,7 +13,7 @@ class DenmarkReportRecord(BasePrimaryKeyModel, table=True):  # type: ignore
     __table_args__ = (UniqueConstraint("index_id", "document_url"),)
 
     index_id: str = Field(index=True, nullable=False)
-    cvr_number: int | None = Field(index=True)
+    cvr_number: int | None = Field(default=None, index=True)
     document_url: str = Field(unique=True, nullable=False)
     document_mime_type: str = Field(nullable=False)
     disclosure_time: datetime = Field(nullable=False)
