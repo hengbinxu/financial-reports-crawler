@@ -13,7 +13,7 @@ class Producer:
 
     def __init__(
         self,
-        queue: Queue[DenmarkReportApiResponse],
+        queue: Queue[QueueData[DenmarkReportApiResponse]],
         *,
         produce_mode: ProduceMode,
         **kwargs: Any,

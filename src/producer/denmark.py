@@ -74,24 +74,35 @@ class DenmarkFinancialReportProducer(BaseClient):
             json=self._get_query(start_date_str, end_date_str, page, self.PAGE_SIZE),
             headers=self.headers,
         )
+        self.log.debug(
+            f"[Producer] Request report with start_date: {start_date}, "
+            f"end_date: {end_date}, page: {page}"
+        )
         return DenmarkReportApiResponse(**res.json())
 
     def get_date_range_reports(
         self, *, start_date: datetime, end_date: datetime, time_interval: float = 1.0
     ) -> Generator[DenmarkReportApiResponse, None, None]:
-        response = self._request_report(start_date=start_date, end_date=end_date)
-        self.log.debug(f"[Produce] Total hits: {response.hits.total}")
-        yield response
-        required_request_times = math.ceil(response.hits.total / self.PAGE_SIZE)
-        if required_request_times <= 0:
-            return
-
-        for page in range(1, required_request_times):
-            response = self._request_report(
-                start_date=start_date, end_date=end_date, page=page
-            )
+        for start_date_, end_date_ in self._generate_params_by_range_dates(
+            start_date=start_date, end_date=end_date
+        ):
+            response = self._request_report(start_date=start_date_, end_date=end_date_)
+            self.log.debug(f"[Producer] Total hits: {response.hits.total}")
             yield response
-            time.sleep(time_interval)
+            required_request_times = math.ceil(response.hits.total / self.PAGE_SIZE)
+            if required_request_times <= 0:
+                return
+
+            for page in range(1, required_request_times):
+                self.log.debug(
+                    f"[Producer] Current Page: {page}, "
+                    f"Total: {required_request_times}"
+                )
+                response = self._request_report(
+                    start_date=start_date_, end_date=end_date_, page=page
+                )
+                yield response
+                time.sleep(time_interval)
 
     def get_today_reports(
         self, *, time_interval: float = 1.0
@@ -104,3 +115,19 @@ class DenmarkFinancialReportProducer(BaseClient):
         yield from self.get_date_range_reports(
             start_date=today, end_date=tomorrow, time_interval=time_interval
         )
+
+    def _generate_params_by_range_dates(
+        self, *, start_date: datetime, end_date: datetime
+    ) -> Generator[list[datetime], None, None]:
+        for idx, date in enumerate(
+            HelperFunc.get_range_dates(start_date=start_date, end_date=end_date)
+        ):
+            if idx == 0:
+                param: list[datetime] = []
+                param.append(date)
+                continue
+
+            param.append(date)
+            yield param
+            param = []
+            param.append(date)

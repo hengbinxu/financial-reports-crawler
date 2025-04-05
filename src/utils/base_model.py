@@ -3,4 +3,4 @@ from pydantic.config import ConfigDict
 
 
 class BaseModel(_BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, use_enum_values=True)

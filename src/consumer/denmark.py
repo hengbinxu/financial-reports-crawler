@@ -9,7 +9,6 @@ from src.database.repository import DenmarkReportRecordRepository
 from src.google_api.denmark_data_storage import DenmarkDataStorage
 from src.models.denmark_api import DenmarkReportApiResponse
 from src.utils.logger import SystemLogger
-from src.utils.type_alias import StrPath
 from src.utils.utils import HelperFunc
 
 
@@ -31,7 +30,8 @@ class DenmarkFinancialReportConsumer:
         file_name = report_dao.get_file_name()
         return output_dir / file_name
 
-    def download_report(self, report_response: DenmarkReportApiResponse) -> None:
+    def download_report(self, report_response: DenmarkReportApiResponse) -> int:
+        count = 0
         for report_info in report_response.convert_to_entity():
             try:
                 self._write_to_db(report_info)
@@ -43,9 +43,11 @@ class DenmarkFinancialReportConsumer:
             HelperFunc.download_file(
                 HTTPMethod.GET, url=report_info.document_url, output_path=output_path
             )
-            self.upload_to_google_drive(output_path)
+            count += 1
+            # self.upload_to_google_drive(output_path)
+        return count
 
-    def upload_to_google_drive(self, file_path: StrPath) -> None:
+    def upload_to_google_drive(self, file_path: Path) -> None:
         """
         Upload file to Google Drive
 

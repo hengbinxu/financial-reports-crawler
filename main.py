@@ -59,7 +59,7 @@ def main(
     end_date: datetime | None,
 ) -> None:
     sql_connector.init_db()
-    queue_manager = QueueManager[DenmarkReportApiResponse](max_size=20)
+    queue_manager = QueueManager[DenmarkReportApiResponse](max_size=60)
     queue = queue_manager.get_queue()
     producer = Producer(
         queue,
@@ -72,7 +72,7 @@ def main(
     tasks_args: list[dict[str, Any]] = [
         {
             "fn": producer.produce,
-            "kwargs": {"time_interval": random.uniform(0.5, 1.5)},
+            "kwargs": {"time_interval": random.uniform(0.5, 3.0)},
         },
         {"fn": consumer.consume, "kwargs": {}},
     ]
@@ -90,3 +90,10 @@ def main(
 
 if __name__ == "__main__":
     main()
+
+# TODO:
+# 1. Improve the threading stopping mechanism
+# 2. Add Dockerfile
+# 3. Change package management from property to uv
+# 4. Add thread locking mechanism
+# 5. Deploy onto github actions
