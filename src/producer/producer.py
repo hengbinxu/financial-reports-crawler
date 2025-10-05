@@ -33,6 +33,7 @@ class Producer:
                     self.queue.put(
                         QueueData(data=response, task_status=TaskStatus.IN_PROGRESS)
                     )
+                self.log.debug("[Producer] Put the notify finished task into the queue")
                 self.queue.put(QueueData(data=None, task_status=TaskStatus.FINISHED))
 
             case ProduceMode.DATE_RANGE:
@@ -49,6 +50,7 @@ class Producer:
                     self.queue.put(
                         QueueData(data=response, task_status=TaskStatus.IN_PROGRESS)
                     )
+                self.log.debug("[Producer] Put the finished task into the queue")
                 self.queue.put(QueueData(data=None, task_status=TaskStatus.FINISHED))
 
             case _:

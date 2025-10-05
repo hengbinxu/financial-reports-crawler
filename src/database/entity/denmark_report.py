@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from typing import Tuple
 
 from sqlalchemy import UniqueConstraint
 from sqlmodel import Field
@@ -9,7 +8,7 @@ from src.database.entity.base_model import BasePrimaryKeyModel
 
 
 class DenmarkReportRecord(BasePrimaryKeyModel, table=True):  # type: ignore
-    __tablename__ = "denmark_report_record"
+    __tablename__: str = "denmark_report_record"
     __table_args__ = (UniqueConstraint("index_id", "document_url"),)
 
     index_id: str = Field(index=True, nullable=False)
@@ -18,7 +17,7 @@ class DenmarkReportRecord(BasePrimaryKeyModel, table=True):  # type: ignore
     document_mime_type: str = Field(nullable=False)
     disclosure_time: datetime = Field(nullable=False)
 
-    def get_disclosure_info(self) -> Tuple[int, int, int]:
+    def get_disclosure_info(self) -> tuple[int, int, int]:
         return (
             self.disclosure_time.year,
             self.disclosure_time.month,

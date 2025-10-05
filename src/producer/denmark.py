@@ -1,7 +1,8 @@
 import math
 import time
+from collections.abc import Generator
 from datetime import datetime, timedelta
-from typing import Any, Dict, Generator
+from typing import Any
 
 from src.models.denmark_api import DenmarkReportApiResponse
 from src.utils.base_client import BaseClient
@@ -31,7 +32,7 @@ class DenmarkFinancialReportProducer(BaseClient):
     @classmethod
     def _get_query(
         cls, start_date: str, end_date: str, page: int, page_size: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         return {
             "query": {
                 "bool": {
@@ -91,7 +92,7 @@ class DenmarkFinancialReportProducer(BaseClient):
             yield response
             required_request_times = math.ceil(response.hits.total / self.PAGE_SIZE)
             if required_request_times <= 0:
-                return
+                continue
 
             for page in range(1, required_request_times):
                 self.log.debug(

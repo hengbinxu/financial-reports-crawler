@@ -19,7 +19,6 @@ class Consumer:
         num_records = 0
         while True:
             queue_data = self.queue.get()
-            self.queue.task_done()
             match queue_data.task_status:
                 case TaskStatus.IN_PROGRESS:
                     self.log.debug("[Consumer] Get the data from the queue")
@@ -27,6 +26,7 @@ class Consumer:
                         continue
                     num = self.denmark_consumer.download_report(queue_data.data)
                     num_records += num
+                    self.queue.task_done()
 
                 case TaskStatus.FINISHED:
                     self.log.debug(
