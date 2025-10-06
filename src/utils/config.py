@@ -12,8 +12,14 @@ class Settings(BaseSettings):
     DENMARK_CVR_API_ULR: str
     DB_URL: str
     DENMARK_PARENT_DRIVE_ID: str
+    CVR_SEARCH_WEBSITE_URL: str
+    CVR_SEARCH_API: str
 
-    model_config = SettingsConfigDict(env_file=ENV_PATH)
+    model_config = SettingsConfigDict(
+        env_file=ENV_PATH,
+        populate_by_name=True,
+        use_enum_values=True,
+    )
 
 
 settings = Settings()

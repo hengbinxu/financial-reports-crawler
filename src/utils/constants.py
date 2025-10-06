@@ -1,5 +1,9 @@
 from enum import Enum
 
+from src import ROOT_DIR
+
+COOKIES_PATH = ROOT_DIR / "cookies"
+
 
 class Envs(str, Enum):
     PROD = "PROD"
