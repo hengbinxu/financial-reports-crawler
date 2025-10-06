@@ -1,19 +1,19 @@
 import hashlib
 import json
 import pickle
-from datetime import datetime, timedelta, timezone
+from collections.abc import Callable, Generator
+from datetime import UTC, datetime, timedelta
 from functools import wraps
 from http import HTTPMethod
 from pathlib import Path
 from threading import RLock
-from typing import Any, Callable, Generator, List, Optional
+from typing import Any, Optional
 
 from httpx import Client
 
+from src import ROOT_DIR
 from src.utils.logger import SystemLogger
 from src.utils.type_alias import StrPath
-
-from .. import ROOT_DIR
 
 log = SystemLogger.get_logger()
 
@@ -29,10 +29,13 @@ class SynchronizedLock:
 
     @classmethod
     def lock[**P, T](
-        cls, lock: Optional[RLock] = None
+        cls,
+        lock: Optional[RLock] = None,  # noqa: UP007
     ) -> Callable[[Callable[P, T]], Callable[P, T]]:
         if lock is None:
             _lock = cls.get_lock()
+        else:
+            _lock = lock
 
         def decorator(func: Callable[P, T]) -> Callable[P, T]:
             @wraps(func)
@@ -69,7 +72,7 @@ class HelperFunc:
 
     @staticmethod
     def get_now() -> datetime:
-        return datetime.now(tz=timezone.utc)
+        return datetime.now(tz=UTC)
 
     @staticmethod
     def get_range_dates(
@@ -98,5 +101,9 @@ class HelperFunc:
         log.debug(f"Write data to {path}")
 
     @staticmethod
-    def hash_list(data: List[Any]) -> str:
+    def hash_list(data: list[Any]) -> str:
         return hashlib.sha256(pickle.dumps(data)).hexdigest()
+
+    @staticmethod
+    def hash_str(string: str) -> str:
+        return hashlib.sha256(string.encode()).hexdigest()

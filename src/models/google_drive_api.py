@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import Field
 
 from src.utils.base_model import BaseModel
@@ -12,7 +10,7 @@ class _File(BaseModel):
 
 
 class ListFilesResponse(BaseModel):
-    files: List[_File]
+    files: list[_File]
 
 
 class CreateFolderResponse(BaseModel):

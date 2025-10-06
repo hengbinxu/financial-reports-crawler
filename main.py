@@ -74,6 +74,7 @@ def main(
             "fn": producer.produce,
             "kwargs": {"time_interval": random.uniform(0.5, 3.0)},
         },
+        # Can add more consumer here
         {"fn": consumer.consume, "kwargs": {}},
     ]
     with ThreadPoolExecutor(max_workers=2) as executor:

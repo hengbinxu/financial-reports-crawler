@@ -1,5 +1,5 @@
+from collections.abc import Generator
 from datetime import datetime
-from typing import Generator, List
 
 from pydantic import Field
 
@@ -38,7 +38,7 @@ class Source(BaseModel):
     disclosure_time: datetime = Field(alias="offentliggoerelsesTidspunkt")
     import_time: datetime = Field(alias="indlaesningsTidspunkt")
     last_updated: datetime = Field(alias="sidstOpdateret")
-    documents: List[Document] = Field(alias="dokumenter")
+    documents: list[Document] = Field(alias="dokumenter")
     import_id: str | None = Field(alias="indlaesningsId")
 
 
@@ -53,7 +53,7 @@ class Hit(BaseModel):
 class HitsInfo(BaseModel):
     total: int
     max_score: float | None
-    hits: List[Hit]
+    hits: list[Hit]
 
 
 class Shared(BaseModel):

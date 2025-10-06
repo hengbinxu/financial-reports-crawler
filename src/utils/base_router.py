@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 from pydantic import RootModel
 
@@ -13,7 +13,7 @@ class UrlPath(BaseModel):
         return self.path.format(**kwargs)
 
 
-class Router(RootModel[List[UrlPath]]):
+class Router(RootModel[list[UrlPath]]):
     def get_api_url(self, name: str) -> str:
         return next(router for router in self.root if router.name == name).path
 
