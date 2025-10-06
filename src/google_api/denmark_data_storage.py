@@ -1,6 +1,6 @@
+from src.config import settings
 from src.google_api.drive_api import GoogleDriveApi
 from src.models.google_drive_api import CreateFolderResponse, ListFilesResponse
-from src.utils.config import settings
 from src.utils.type_alias import StrPath
 from src.utils.utils import SynchronizedLock
 

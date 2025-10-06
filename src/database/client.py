@@ -1,9 +1,10 @@
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 
 from sqlmodel import Session, SQLModel, create_engine
 
-from src.utils.config import settings
+from src.config import settings
 from src.utils.constants import Envs
 from src.utils.logger import SystemLogger
 

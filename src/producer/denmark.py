@@ -4,10 +4,10 @@ from collections.abc import Generator
 from datetime import datetime, timedelta
 from typing import Any
 
+from src.config import settings
 from src.models.denmark_api import DenmarkReportApiResponse
 from src.utils.base_client import BaseClient
 from src.utils.base_router import Router, UrlPath
-from src.utils.config import settings
 from src.utils.headers import json_headers
 from src.utils.utils import HelperFunc
 
@@ -96,8 +96,7 @@ class DenmarkFinancialReportProducer(BaseClient):
 
             for page in range(1, required_request_times):
                 self.log.debug(
-                    f"[Producer] Current Page: {page}, "
-                    f"Total: {required_request_times}"
+                    f"[Producer] Current Page: {page}, Total: {required_request_times}"
                 )
                 response = self._request_report(
                     start_date=start_date_, end_date=end_date_, page=page

@@ -1,9 +1,9 @@
 from httpx._types import HeaderTypes
 
+from src.config import settings
 from src.models.cvr_search import GetCompanyInfoByCvrNumberResponse
 from src.utils.base_client import BaseClient
 from src.utils.base_router import Router, UrlPath
-from src.utils.config import settings
 from src.utils.cookie_manager import CookieManager
 
 _cvr_search_routers = Router(
